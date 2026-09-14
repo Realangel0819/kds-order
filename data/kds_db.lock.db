@@ -1,0 +1,6 @@
+#FileLock
+#Mon Sep 14 15:02:46 KST 2026
+server=192.168.0.10\:63493
+hostName=Pengyu
+method=file
+id=1a09e82bef465918ec7391efc385ef6c3540239bf4a

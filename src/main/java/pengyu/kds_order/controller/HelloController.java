@@ -1,4 +1,4 @@
-package pengyu.kds_order;
+package pengyu.kds_order.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,3 +11,4 @@ public class HelloController {
         return "안녕하세요, 웨이터입니다!";
     }
 }
+
