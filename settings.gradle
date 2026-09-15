@@ -1,1 +1,5 @@
-rootProject.name = 'kds-order'
+rootProject.name = 'kds_order' // 루트 프로젝트 이름 (그대로 두셔도 됩니다)
+
+include 'common'
+include 'menu-service'
+include 'order-service'

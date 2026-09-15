@@ -1,32 +1,39 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '4.1.1'
-	id 'io.spring.dependency-management' version '1.1.7'
+	id 'org.springframework.boot' version '3.3.0' apply false
+	id 'io.spring.dependency-management' version '1.1.5' apply false
 }
 
-group = 'pengyu'
-version = '0.0.1-SNAPSHOT'
+// 모든 모듈에 공통으로 적용할 설정
+allprojects {
+	group = 'pengyu'
+	version = '0.0.1-SNAPSHOT'
 
-java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
+	repositories {
+		mavenCentral()
 	}
 }
 
-repositories {
-	mavenCentral()
-}
+// 하위 모듈(common, menu, order)에만 적용할 공통 설정
+subprojects {
+	apply plugin: 'java'
+	apply plugin: 'org.springframework.boot'
+	apply plugin: 'io.spring.dependency-management'
 
-dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
-	testCompileOnly 'org.projectlombok:lombok'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-	testAnnotationProcessor 'org.projectlombok:lombok'
-}
+	java{
+		sourceCompatibility = '17' // 사용하시는 Java 버전에 맞게 수정하세요
 
-tasks.named('test') {
-	useJUnitPlatform()
+	}
+
+	dependencies {
+		// 모든 하위 모듈이 기본적으로 가지는 의존성 (Lombok 등)
+		compileOnly 'org.projectlombok:lombok'
+		annotationProcessor 'org.projectlombok:lombok'
+
+		testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	}
+
+	tasks.named('test') {
+		useJUnitPlatform()
+	}
 }
