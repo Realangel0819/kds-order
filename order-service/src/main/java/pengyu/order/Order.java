@@ -1,4 +1,4 @@
-package pengyu.kds_order.domain;
+package pengyu.order;
 
 import jakarta.persistence.*;
 import lombok.*;

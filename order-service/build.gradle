@@ -1,0 +1,9 @@
+dependencies {
+    // Web, JPA, MySQL 등 서비스 구동에 필요한 라이브러리
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    runtimeOnly 'com.h2database:h2'
+
+    // 공통 모듈에 대한 의존성 (컴파일 시점에 common의 클래스를 사용할 수 있게 함)
+    implementation project(':common')
+}

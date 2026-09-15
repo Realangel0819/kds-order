@@ -1,10 +1,7 @@
-package pengyu.kds_order.controller;
+package pengyu.order;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import pengyu.kds_order.domain.Order;
-import pengyu.kds_order.domain.OrderStatus;
-import pengyu.kds_order.service.OrderService;
 
 import java.util.List;
 

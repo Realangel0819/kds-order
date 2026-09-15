@@ -1,11 +1,8 @@
-package pengyu.kds_order.service;
+package pengyu.menu;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pengyu.kds_order.domain.Menu;
-import pengyu.kds_order.domain.MenuStatus;
-import pengyu.kds_order.repository.MenuRepository;
 
 import java.util.List;
 

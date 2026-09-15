@@ -1,4 +1,4 @@
-package pengyu.kds_order.domain;
+package pengyu.menu;
 
 public enum MenuStatus {
     AVAILABLE, SOLD_OUT

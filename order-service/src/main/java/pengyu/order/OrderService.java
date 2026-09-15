@@ -1,11 +1,8 @@
-package pengyu.kds_order.service;
+package pengyu.order;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pengyu.kds_order.domain.Order;
-import pengyu.kds_order.domain.OrderStatus;
-import pengyu.kds_order.repository.OrderRepository;
 
 import java.util.List;
 

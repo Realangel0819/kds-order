@@ -1,9 +1,7 @@
-package pengyu.kds_order.controller;
+package pengyu.menu;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import pengyu.kds_order.domain.Menu;
-import pengyu.kds_order.service.MenuService;
 
 import java.util.List;
 

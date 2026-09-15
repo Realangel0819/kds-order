@@ -1,4 +1,4 @@
-package pengyu.kds_order.domain;
+package pengyu.order;
 
 public enum OrderStatus {
     PENDING,   // 주문 접수 대기
