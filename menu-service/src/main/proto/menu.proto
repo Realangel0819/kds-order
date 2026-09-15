@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package menu;
+
+option java_package = "com.kds.menu.grpc";
+option java_multiple_files = true;
+
+// 메뉴 서비스 정의
+service MenuGrpcService {
+  // 메뉴 정보 조회 (단건)
+  rpc GetMenuInfo (MenuRequest) returns (MenuResponse);
+}
+
+message MenuRequest {
+  int64 menu_id = 1;
+}
+
+enum MenuStatus {
+  AVAILABLE = 0;
+  SOLD_OUT = 1;
+}
+
+message MenuResponse {
+  int64 menu_id = 1;
+  string menu_name = 2;
+  int32 price = 3;
+  int32 cooking_time = 4;
+  MenuStatus menu_status = 5;
+}
