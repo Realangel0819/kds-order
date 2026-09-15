@@ -32,6 +32,8 @@ subprojects {
 		annotationProcessor 'org.projectlombok:lombok'
 
 		testImplementation 'org.springframework.boot:spring-boot-starter-test'
+		// Gradle 9부터는 JUnit Platform Launcher가 기본 번들에서 빠져서 명시적으로 추가해야 테스트가 실행됩니다.
+		testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	}
 
 	tasks.named('test') {
