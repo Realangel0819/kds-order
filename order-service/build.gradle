@@ -4,6 +4,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     runtimeOnly 'com.h2database:h2'
 
-    // 공통 모듈에 대한 의존성 (컴파일 시점에 common의 클래스를 사용할 수 있게 함)
+    // gRPC Client (Menu Service 호출용 Netty 전송 구현체. stub/protobuf는 common의 api로 전이됨)
+    implementation 'io.grpc:grpc-netty-shaded:1.60.0'
+
+    // 공통 모듈에 대한 의존성 (menu.proto 생성 코드: MenuGrpcServiceGrpc, MenuRequest, MenuResponse)
     implementation project(':common')
 }
