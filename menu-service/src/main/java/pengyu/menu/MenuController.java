@@ -14,8 +14,11 @@ public class MenuController {
 
     // MenuController 클래스 안에 아래 메서드를 추가해 주세요.
     @PostMapping
-    public String createMenu(@RequestParam String name, @RequestParam int price) {
-        menuService.createMenu(name, price);
+    public String createMenu(
+            @RequestParam String name,
+            @RequestParam int price,
+            @RequestParam int cookingTime) {
+        menuService.createMenu(name, price, cookingTime);
         return name + " 메뉴가 생성되었습니다.";
     }
 

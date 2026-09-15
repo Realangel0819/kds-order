@@ -14,10 +14,11 @@ public class MenuService {
 
     // MenuService 클래스 안에 아래 메서드를 추가해 주세요.
     @Transactional
-    public void createMenu(String name, int price) {
+    public void createMenu(String name, int price, int cookingTime) {
         Menu newMenu = Menu.builder()
                 .name(name)
                 .price(price)
+                .cookingTime(cookingTime)
                 .status(MenuStatus.AVAILABLE)
                 .build();
 

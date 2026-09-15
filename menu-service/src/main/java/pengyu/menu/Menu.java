@@ -16,13 +16,16 @@ public class Menu {
 
     private int price;
 
+    private int cookingTime;
+
     @Enumerated(EnumType.STRING)
     private MenuStatus status;
 
     @Builder
-    public Menu(String name, int price, MenuStatus status) {
+    public Menu(String name, int price, int cookingTime, MenuStatus status) {
         this.name = name;
         this.price = price;
+        this.cookingTime = cookingTime;
         this.status = status;
     }
 
