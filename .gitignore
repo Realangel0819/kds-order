@@ -4,6 +4,7 @@ build/
 data/
 /data/
 *.mv.db
+*.db
 *.trace.db
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
