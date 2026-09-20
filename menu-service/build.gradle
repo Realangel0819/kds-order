@@ -9,4 +9,7 @@ dependencies {
     // 공통 모듈에 대한 의존성 (menu.proto 생성 코드는 common에서 옮, protobuf-java/grpc-stub도 common의 api로 전이)
     implementation project(':common')
     implementation 'org.springframework.kafka:spring-kafka'
+
+    // AWS SDK v2 DynamoDB Enhanced Client
+    implementation 'software.amazon.awssdk:dynamodb-enhanced:2.20.162'
 }
