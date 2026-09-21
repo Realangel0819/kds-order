@@ -2,7 +2,7 @@ dependencies {
     // Web, JPA, MySQL 등 서비스 구동에 필요한 라이브러리
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    runtimeOnly 'com.h2database:h2'
+    runtimeOnly 'com.mysql:mysql-connector-j'
 
     // gRPC Client (Menu Service 호출용 Netty 전송 구현체. stub/protobuf는 common의 api로 전이됨)
     implementation 'io.grpc:grpc-netty-shaded:1.60.0'

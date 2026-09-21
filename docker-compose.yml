@@ -1,5 +1,15 @@
 version: '3'
 services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+
   kafka:
     image: apache/kafka:3.8.0
     container_name: kafka
