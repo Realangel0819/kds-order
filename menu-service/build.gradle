@@ -2,7 +2,7 @@ dependencies {
     // Web, JPA, MySQL 등 서비스 구동에 필요한 라이브러리
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    runtimeOnly 'com.h2database:h2'
+    runtimeOnly 'com.mysql:mysql-connector-j'
     // gRPC Server Starter (Spring Boot 3.x 호환)
     implementation 'net.devh:grpc-server-spring-boot-starter:3.1.0.RELEASE'
 
