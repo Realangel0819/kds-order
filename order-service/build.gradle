@@ -9,4 +9,8 @@ dependencies {
 
     // 공통 모듈에 대한 의존성 (menu.proto 생성 코드: MenuGrpcServiceGrpc, MenuRequest, MenuResponse)
     implementation project(':common')
+
+    // 분산락(Redisson) - 동시에 같은 메뉴로 몰리는 주문 요청을 직렬화하기 위한 AOP 락
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+    implementation 'org.redisson:redisson:3.37.0'
 }

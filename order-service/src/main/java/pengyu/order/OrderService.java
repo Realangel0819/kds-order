@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pengyu.order.lock.DistributedLock;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -26,6 +27,8 @@ public class OrderService {
     private long menuServiceTimeoutSeconds;
 
     // 1. 주문 생성
+    // 같은 메뉴로 주문이 몰릴 때 메뉴 단위로 직렬화하기 위해 분산락을 건다.
+    @DistributedLock(key = "'MENU_ORDER_LOCK_' + #menuId", waitTime = 3000, leaseTime = 3000, timeUnit = TimeUnit.MILLISECONDS)
     @Transactional
     public Long createOrder(Long menuId, int quantity) {
         // Menu Service가 지연/다운되더라도 여기서 방어막(타임아웃)을 통과하거나 예외로 즉시 탈출한다.
