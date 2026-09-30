@@ -37,8 +37,15 @@ public class DistributedLockAspect {
     private final ExpressionParser parser = new SpelExpressionParser();
     private final DefaultParameterNameDiscoverer parameterNameDiscoverer = new DefaultParameterNameDiscoverer();
 
-    @Around("@annotation(distributedLock)")
-    public Object lock(ProceedingJoinPoint joinPoint, DistributedLock distributedLock) throws Throwable {
+    // 주의: "@annotation(distributedLock)"처럼 어노테이션 인스턴스를 포인트컷 표현식에서 바로 바인딩하면
+    // 여러 스레드가 동시에 같은 프록시 메서드를 호출할 때 내부 JoinPointMatch 상태가 꼬이면서
+    // "Required to bind 2 arguments, but only bound 1" 예외가 랜덤하게 터지는 Spring AOP의 동시성 버그가 있다.
+    // 그래서 포인트컷은 어노테이션 타입만으로 매칭하고, 실제 어노테이션 값은 advice 안에서 리플렉션으로 직접 꺼낸다.
+    @Around("@annotation(pengyu.order.lock.DistributedLock)")
+    public Object lock(ProceedingJoinPoint joinPoint) throws Throwable {
+        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+        DistributedLock distributedLock = signature.getMethod().getAnnotation(DistributedLock.class);
+
         String lockKey = LOCK_KEY_PREFIX + parseKey(joinPoint, distributedLock.key());
         RLock rLock = redissonClient.getLock(lockKey);
 
