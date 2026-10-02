@@ -1,0 +1,8 @@
+dependencies {
+    // WebFlux - 서블릿(Tomcat) 대신 Netty 위에서 논블로킹으로 동작한다.
+    // 주의: spring-boot-starter-web을 같이 넣으면 Spring Boot가 MVC(Tomcat)를 우선 선택하므로 넣지 않는다.
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    // WebFlux 테스트용 (StepVerifier 등 Reactor 테스트 도구)
+    testImplementation 'io.projectreactor:reactor-test'
+}
