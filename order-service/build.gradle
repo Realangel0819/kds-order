@@ -13,4 +13,10 @@ dependencies {
     // 분산락(Redisson) - 동시에 같은 메뉴로 몰리는 주문 요청을 직렬화하기 위한 AOP 락
     implementation 'org.springframework.boot:spring-boot-starter-aop'
     implementation 'org.redisson:redisson:3.37.0'
+
+    // Spring Batch - 일일 조리 통계(DailyCookStatJob)
+    implementation 'org.springframework.boot:spring-boot-starter-batch'
+    testImplementation 'org.springframework.batch:spring-batch-test'
+    // Reader 단독 테스트용 인메모리 DB (개발용 order_db의 주문 데이터를 건드리지 않기 위해)
+    testRuntimeOnly 'com.h2database:h2'
 }

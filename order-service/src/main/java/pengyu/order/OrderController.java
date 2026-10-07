@@ -19,7 +19,7 @@ public class OrderController {
     public Long createOrder(@RequestParam Long menuId, @RequestParam int quantity) {
         Long orderId = orderService.createOrder(menuId, quantity);
         // 트랜잭션 커밋이 끝난 주문만 바구니에 담는다 (롤백된 주문이 주방으로 가는 것 방지)
-        batchGroupingService.addOrder(menuId, quantity);
+        batchGroupingService.addOrder(orderId, menuId, quantity);
         return orderId;
     }
 
@@ -41,7 +41,6 @@ public class OrderController {
     public List<Order> getOrders() {
         return orderService.getOrders();
     }
-
     // 주문 삭제 API (DELETE)
     @DeleteMapping("/{orderId}")
     public String deleteOrder(@PathVariable Long orderId) {

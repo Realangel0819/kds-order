@@ -7,7 +7,10 @@ import org.springframework.stereotype.Service;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -19,17 +22,20 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class BatchGroupingService {
 
-    // KDS로 보내기 위한 임시 바구니 (menuId -> 누적 수량 + 첫 주문 시각)
+    // KDS로 보내기 위한 임시 바구니 (menuId -> 누적 수량 + 첫 주문 시각 + 담긴 주문 ID들)
     private final Map<Long, PendingBatch> bucket = new ConcurrentHashMap<>();
 
     private final KdsSender kdsSender;
+    private final OrderGroupRecorder orderGroupRecorder;
     private final Clock clock;
     private final int batchThreshold;
 
     public BatchGroupingService(KdsSender kdsSender,
+                                OrderGroupRecorder orderGroupRecorder,
                                 Clock clock,
                                 @Value("${kds.batch.threshold:5}") int batchThreshold) {
         this.kdsSender = kdsSender;
+        this.orderGroupRecorder = orderGroupRecorder;
         this.clock = clock;
         this.batchThreshold = batchThreshold;
     }
@@ -37,7 +43,7 @@ public class BatchGroupingService {
     /**
      * 외부(주문 생성 이후)에서 주문이 들어왔을 때 호출하는 메서드
      */
-    public void addOrder(Long menuId, int quantity) {
+    public void addOrder(Long orderId, Long menuId, int quantity) {
         Instant now = clock.instant();
         PendingBatch[] flushed = {null}; // 람다 밖으로 꺼내기 위한 홀더
 
@@ -45,8 +51,8 @@ public class BatchGroupingService {
         // merge() 후 get()/remove()를 따로 부르면 그 사이에 들어온 주문이 유실되거나 중복 전송될 수 있다.
         bucket.compute(menuId, (id, current) -> {
             PendingBatch next = (current == null)
-                    ? new PendingBatch(quantity, now)
-                    : current.add(quantity);
+                    ? new PendingBatch(quantity, now, List.of(orderId))
+                    : current.add(orderId, quantity);
             if (next.quantity() >= batchThreshold) {
                 flushed[0] = next;
                 return null; // null 반환 시 key가 제거된다
@@ -76,13 +82,26 @@ public class BatchGroupingService {
     }
 
     private void send(Long menuId, PendingBatch pending, FlushTrigger trigger) {
-        kdsSender.send(new KdsBatch(menuId, pending.quantity(), pending.firstOrderedAt(), clock.instant(), trigger));
+        String groupId = UUID.randomUUID().toString();
+        kdsSender.send(new KdsBatch(menuId, pending.quantity(), pending.firstOrderedAt(), clock.instant(), trigger,
+                groupId, pending.orderIds()));
+
+        // 조리 지시(KDS 전송)가 우선이고 groupId는 통계용 기록이다.
+        // 기록 실패로 예외를 던지면 flushTimeWindowBatch()의 나머지 메뉴 전송까지 멈추므로 로그만 남긴다.
+        try {
+            orderGroupRecorder.record(groupId, pending.orderIds());
+        } catch (RuntimeException e) {
+            log.error("groupId 기록 실패 - menuId={}, groupId={}, orderIds={}", menuId, groupId, pending.orderIds(), e);
+        }
     }
 
-    private record PendingBatch(int quantity, Instant firstOrderedAt) {
+    // 불변으로 유지해야 compute() 안에서만 상태가 바뀌어 원자성이 지켜진다
+    private record PendingBatch(int quantity, Instant firstOrderedAt, List<Long> orderIds) {
 
-        PendingBatch add(int more) {
-            return new PendingBatch(quantity + more, firstOrderedAt);
+        PendingBatch add(Long orderId, int more) {
+            List<Long> nextIds = new ArrayList<>(orderIds);
+            nextIds.add(orderId);
+            return new PendingBatch(quantity + more, firstOrderedAt, List.copyOf(nextIds));
         }
     }
 }

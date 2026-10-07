@@ -12,7 +12,7 @@ public class LoggingKdsSender implements KdsSender {
 
     @Override
     public void send(KdsBatch batch) {
-        log.info("🔥 KDS 전송 완료: 메뉴 {} / 수량: {}개 한 번에 조리! (trigger={}, 최대 대기={}ms)",
-                batch.menuId(), batch.quantity(), batch.trigger(), batch.maxWait().toMillis());
+        log.info("🔥 KDS 전송 완료: 메뉴 {} / 수량: {}개 한 번에 조리! (trigger={}, 최대 대기={}ms, groupId={}, orderIds={})",
+                batch.menuId(), batch.quantity(), batch.trigger(), batch.maxWait().toMillis(), batch.groupId(), batch.orderIds());
     }
 }

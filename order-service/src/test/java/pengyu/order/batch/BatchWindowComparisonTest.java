@@ -123,7 +123,7 @@ class BatchWindowComparisonTest {
     private WindowResult simulate(List<SimulatedOrder> orders, int windowSeconds) {
         MutableClock clock = new MutableClock(START);
         RecordingKdsSender sender = new RecordingKdsSender();
-        BatchGroupingService service = new BatchGroupingService(sender, clock, THRESHOLD);
+        BatchGroupingService service = new BatchGroupingService(sender, (groupId, orderIds) -> { }, clock, THRESHOLD);
 
         int index = 0;
         for (int second = 0; second <= SIMULATION_SECONDS; second++) {
@@ -131,7 +131,7 @@ class BatchWindowComparisonTest {
 
             while (index < orders.size() && orders.get(index).second() == second) {
                 SimulatedOrder order = orders.get(index++);
-                service.addOrder(order.menuId(), order.quantity());
+                service.addOrder((long) index, order.menuId(), order.quantity()); // index를 주문 ID로 사용
             }
 
             // @Scheduled(fixedRate) 역할: 윈도우 경계마다 자투리를 비운다
