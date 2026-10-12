@@ -39,3 +39,14 @@ services:
     container_name: redis
     ports:
       - "6379:6379"
+
+  elasticsearch:
+    # Spring Boot 3.3이 쓰는 ES Java Client(8.13)와 버전을 맞춘다
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
+    container_name: elasticsearch
+    ports:
+      - "9200:9200"
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: "false" # 로컬 개발용: HTTPS/인증 끄기
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"

@@ -8,8 +8,10 @@ import io.grpc.StatusRuntimeException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pengyu.order.event.OrderCompletedEvent;
 import pengyu.order.lock.DistributedLock;
 
 import java.util.List;
@@ -22,6 +24,7 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final MenuGrpcServiceGrpc.MenuGrpcServiceBlockingStub menuServiceBlockingStub;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Value("${grpc.client.menu-service.timeout-seconds}")
     private long menuServiceTimeoutSeconds;
@@ -38,6 +41,8 @@ public class OrderService {
         Order order = Order.builder()
                 .menuId(menuId)
                 .quantity(quantity)
+                .menuName(menu.getMenuName()) // 이미 조회한 메뉴 정보를 주문 시점 스냅샷으로 남긴다
+                .price(menu.getPrice())
                 .status(OrderStatus.PENDING) // 처음 주문 시 무조건 대기 상태
                 .build();
 
@@ -82,8 +87,15 @@ public class OrderService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 주문이 없습니다. id=" + orderId));
 
+        boolean completedNow = newStatus == OrderStatus.COMPLETED && order.getStatus() != OrderStatus.COMPLETED;
+
         // 객체 상태만 바꾸면 트랜잭션 커밋 시점에 UPDATE 쿼리가 나감!
         order.changeStatus(newStatus);
+
+        if (completedNow) {
+            // 여기서는 스프링 이벤트만 남기고, 실제 Kafka 발행은 커밋 이후(OrderCompletedEventPublisher)에 한다
+            eventPublisher.publishEvent(OrderCompletedEvent.from(order));
+        }
     }
 
     // 3. 주문 단건 조회
