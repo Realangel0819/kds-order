@@ -1,8 +1,38 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm'
+    // Kotlin 클래스는 기본이 final이라 CGLIB 프록시를 만들 수 없다.
+    // @Component, @Configuration 등 스프링 애노테이션이 붙은 클래스를 컴파일 타임에 자동으로 open 처리해 준다.
+    id 'org.jetbrains.kotlin.plugin.spring'
+}
+
 dependencies {
     // WebFlux - 서블릿(Tomcat) 대신 Netty 위에서 논블로킹으로 동작한다.
     // 주의: spring-boot-starter-web을 같이 넣으면 Spring Boot가 MVC(Tomcat)를 우선 선택하므로 넣지 않는다.
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
+    // Kotlin 리플렉션 (스프링이 생성자 파라미터 이름/nullable 여부를 읽을 때 사용)
+    implementation 'org.jetbrains.kotlin:kotlin-reflect'
+    // 기본 생성자가 없는 data class를 Jackson이 생성자로 역직렬화할 수 있게 해준다 (Boot가 ObjectMapper에 자동 등록)
+    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
+
+    // Kafka - order-completed-topic 구독 → 주문 알림 Sink로 전달
+    implementation 'org.springframework.kafka:spring-kafka'
+
     // WebFlux 테스트용 (StepVerifier 등 Reactor 테스트 도구)
     testImplementation 'io.projectreactor:reactor-test'
+
+    // Kotest (JUnit5 플랫폼 위에서 실행된다)
+    testImplementation 'io.kotest:kotest-runner-junit5:5.9.1'
+    testImplementation 'io.kotest:kotest-assertions-core:5.9.1'
+    // Kotest 스펙에서 @SpringBootTest 컨텍스트를 쓰기 위한 확장
+    testImplementation 'io.kotest.extensions:kotest-extensions-spring:1.3.0'
+}
+
+kotlin {
+    compilerOptions {
+        // compileJava(sourceCompatibility 17)와 바이트코드 버전을 맞춘다
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+        // 스프링의 @Nullable 등 JSR-305 애노테이션을 Kotlin 타입의 nullable 여부로 그대로 반영
+        freeCompilerArgs.add('-Xjsr305=strict')
+    }
 }
